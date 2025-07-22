@@ -138,6 +138,7 @@
         <tr>
           <th>Arrival / Departure Flight No</th>
           <th>Registration</th>
+          <th>From / To</th>
           <th>STA / STD</th>
           <th>ETA / ETD</th>
           <th>Aircraft Type</th>
@@ -211,19 +212,20 @@
       return "";
     };
 
-    // MAIN FLIGHT VISIBLE LOGIC: Show until 20 min after ACTUAL arrival/departure (or as on-air)
+    // SIMPLIFIED AND FIXED LOGIC: Since we're querying COK airport, arrivals are TO COK, departures are FROM COK by default
     function filterAndSortFlights(flights, type, isHistorical = false) {
       const filterValue = document.getElementById("airlineFilter").value;
       const sortOption = document.getElementById("sortOption").value;
       const now = Math.floor(Date.now() / 1000);
       const twentyMin = 20 * 60;
+      
       return flights.filter(f => {
         const fn = f.flight?.identification?.number?.default || "";
         const airlineCode = fn.substring(0, 2);
-        const reg = f.flight?.aircraft?.registration || "";
         const est = type === "departures" ? f.flight.time.estimated?.departure : f.flight.time.estimated?.arrival;
         const sch = type === "departures" ? f.flight.time.scheduled?.departure : f.flight.time.scheduled?.arrival;
         const act = type === "departures" ? f.flight.time.actual?.departure : f.flight.time.actual?.arrival;
+        
         // Airline set filter
         let airlineMatch = false;
         if (filterValue === "IX") {
@@ -236,21 +238,17 @@
         }
         if (!airlineMatch) return false;
 
-        // --- MAIN: ARRIVAL (to COK): show if not yet landed, or landed ≤ 20 min ago
-        // --- Or DEPARTURE (from COK): show if not yet departed, or departed ≤ 20 min ago
-        if (type === "arrivals") {
-          const destCode = f.flight?.airport?.destination?.code?.iata || "";
-          if (destCode !== "COK") return false;
-          if (!act) return true; // airborne or planned
-          if (act > now - twentyMin) return true; // landed ≤20m ago
+        // Since we're querying COK airport API, all arrivals are TO COK, all departures are FROM COK
+        // Show flight if:
+        // 1. Not yet completed (no actual time)
+        // 2. OR completed within last 20 minutes
+        if (!act) {
+          return true; // Flight not yet arrived/departed
         }
-        if (type === "departures") {
-          const origCode = f.flight?.airport?.origin?.code?.iata || "";
-          if (origCode !== "COK") return false;
-          if (!act) return true; // not yet gone
-          if (act > now - twentyMin) return true; // departed ≤20m ago
+        if (act > now - twentyMin) {
+          return true; // Completed within last 20 minutes
         }
-
+        
         return false;
       }).sort((a,b) => {
         const now = Math.floor(Date.now() / 1000);
@@ -259,7 +257,7 @@
           const est = isDep ? f.flight.time.estimated?.departure : f.flight.time.estimated?.arrival;
           const sch = isDep ? f.flight.time.scheduled?.departure : f.flight.time.scheduled?.arrival;
           const act = isDep ? f.flight.time.actual?.departure : f.flight.time.actual?.arrival;
-          const isDelayed = sch && now > sch && (!act || act > now) && (!est || est > now);
+          const isDelayed = sch && now > sch && (!act || act > now);
           const isComplete = act && act <= now;
           return { est, sch, act, isDelayed, isComplete };
         };
@@ -284,17 +282,25 @@
         const res = await fetch(getEndpoint(type,page,timestamp));
         const data = await res.json();
         const flights = data.result.response.airport.pluginData.schedule[type].data;
+        
+        console.log(`Loaded ${flights.length} ${type} flights from API`); // Debug log
+        
         if (!append) historicalFlights[type].clear();
         if (!append) flightsCache[type] = flights; else flightsCache[type].push(...flights);
+        
         const tbody = document.querySelector(`#${type}-table tbody`);
         if (!append) tbody.innerHTML = "";
+        
         const filteredFlights = filterAndSortFlights(flightsCache[type], type, append);
+        console.log(`Filtered to ${filteredFlights.length} ${type} flights`); // Debug log
+        
         const now = Math.floor(Date.now() / 1000);
         filteredFlights.forEach(f => {
           const fl = f.flight;
           const flightId = fl.identification?.id;
           if (flightId && historicalFlights[type].has(flightId)) return;
           if (flightId) historicalFlights[type].add(flightId);
+          
           const isDep = type === "departures";
           const est = isDep ? fl.time.estimated?.departure : fl.time.estimated?.arrival;
           const sch = isDep ? fl.time.scheduled?.departure : fl.time.scheduled?.arrival;
@@ -305,11 +311,14 @@
           const airportCode = isDep ? fl.airport.destination?.code?.iata : fl.airport.origin?.code?.iata || "-";
           const model = fl.aircraft?.model?.text || "-";
           const status = fl.status?.text || "-";
-          const isDelayed = sch && now > sch && (!act || act > now) && (!est || est > now);
+          
+          const isDelayed = sch && now > sch && (!act || act > now);
           const isCompleted = act && act <= now;
+          
           const row = document.createElement("tr");
           if (isDelayed) row.classList.add("delayed-row");
           else if (isCompleted) row.classList.add("completed-row");
+          
           row.innerHTML = `
             <td>
               <a href="javascript:void(0);" onclick="openFR24('${fn}')" class="fr24link">
@@ -366,9 +375,9 @@
     }
 
     function renderTurnarounds() {
-      // Show flights that ARR: land at COK and DEP: depart COK, dep within 2h of arr, both visible as per rules
       const arrs = filterAndSortFlights(flightsCache.arrivals, "arrivals");
       const deps = filterAndSortFlights(flightsCache.departures, "departures");
+      
       const arrMap = {};
       arrs.forEach(f => {
         const reg = f.flight.aircraft?.registration;
@@ -380,10 +389,12 @@
             sta: f.flight.time.scheduled?.arrival,
             eta: f.flight.time.estimated?.arrival,
             aircraft: f.flight.aircraft?.model?.text || "-",
+            from: f.flight.airport?.origin?.code?.iata || "-", // Added origin airport code
             arrTime
           };
         }
       });
+      
       const now = Math.floor(Date.now() / 1000);
       const output = [];
       deps.forEach(f => {
@@ -395,11 +406,11 @@
         const atd = f.flight.time.actual?.departure;
         const arr = arrMap[reg];
         if (arr.arrTime && std && std - arr.arrTime >= 0 && std - arr.arrTime <= 2 * 3600) {
-          if (atd && atd < now - 3600) return;
           output.push({
             arrFlightNo: arr.flightNo,
             depFlightNo: f.flight.identification?.number?.default || "-",
             reg,
+            fromTo: `${arr.from} / ${f.flight.airport?.destination?.code?.iata || "-"}`, // Added From/To codes
             staStd: `${toLocalTime(arr.sta)} / ${toLocalTime(std)}`,
             etaEtd: `${toLocalTime(arr.eta)} / ${toLocalTime(etd)}`,
             aircraft: arr.aircraft,
@@ -423,6 +434,7 @@
             <a href="javascript:void(0);" onclick="openFR24('${row.depFlightNo}')" class="fr24link">${row.depFlightNo}</a>
           </td>
           <td>${row.reg}</td>
+          <td>${row.fromTo}</td>
           <td>${row.staStd}</td>
           <td>${row.etaEtd}</td>
           <td>${row.aircraft}</td>
