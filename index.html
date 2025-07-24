@@ -1,500 +1,1569 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AIX SEC OPS - Aswin COK</title>
-  <meta name="theme-color" content="#000000" />
-  <link rel="manifest" href="manifest.json" />
-  <style>
-    :root {
-      --bg-color: #ffffff;
-      --text-color: #000000;
-      --header-bg: #f0f0f0;
-      --table-header-bg: #333333;
-      --table-header-text: #ffffff;
-      --border-color: #cccccc;
-      --control-bg: #ffffff;
-      --control-text: #000000;
-      --delayed-row-bg: #fff0f0;
-      --completed-row-bg: #f0fff0;
-      --tab-bg: #dde;
-      --tab-active-bg: #333;
-      --tab-active-text: #fff;
-    }
-    [data-theme="dark"] {
-      --bg-color: #1a1a1a;
-      --text-color: #ffffff;
-      --header-bg: #2a2a2a;
-      --table-header-bg: #444444;
-      --table-header-text: #ffffff;
-      --border-color: #555555;
-      --control-bg: #333333;
-      --control-text: #ffffff;
-      --delayed-row-bg: #3a2a2a;
-      --completed-row-bg: #2a3a2a;
-      --tab-bg: #222;
-      --tab-active-bg: #fff;
-      --tab-active-text: #222;
-    }
-    body { font-family: Arial,sans-serif;margin:20px;
-      background:var(--bg-color);color:var(--text-color);transition:.3s;}
-    h2 { background:var(--header-bg);padding:10px;}
-    .controls {display:flex;justify-content:space-between;margin-bottom:10px;gap:10px;flex-wrap:wrap;}
-    .controls-left, .controls-right {display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
-    select, button {padding:5px;background:var(--control-bg);color:var(--control-text);border:1px solid var(--border-color);border-radius:4px;}
-    .tabs { display: flex; gap: 1px; margin-bottom: 5px;}
-    .tab-btn {
-      background: var(--tab-bg); border: none; padding: 8px 18px; cursor: pointer; color: var(--text-color);
-      border-radius: 6px 6px 0 0; font-size: 15px; margin-right:4px;
-      transition: background 0.2s, color 0.2s;
-    }
-    .tab-btn.active {background:var(--tab-active-bg);color:var(--tab-active-text);font-weight:600;}
-    .tab-content {display:none;}
-    .tab-content.active {display:block;}
-    table {width:100%;border-collapse:collapse;margin-bottom:40px;}
-    th,td {border:1px solid var(--border-color);padding:8px;text-align:center;}
-    th {background:var(--table-header-bg);color:var(--table-header-text);}
-    .status-green { color: green; font-weight: bold; }
-    .status-orange { color: orange; font-weight: bold; }
-    .status-red { color: red; font-weight: bold; }
-    .delayed-row { background: var(--delayed-row-bg);}
-    .completed-row { background: var(--completed-row-bg);}
-    .flight-logo {height:16px;vertical-align:middle;margin-right:5px;}
-    #themeToggle {cursor:pointer;}
-    .fr24link { color: #07c; text-decoration: underline; cursor: pointer; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Cochin Airport Flight Tracker</title>
+    <meta name="theme-color" content="#1a1a1a">
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiQ29jaGluIEFpcnBvcnQgRmxpZ2h0IFRyYWNrZXIiLCJzaG9ydF9uYW1lIjoiQ09LIEZsaWdodHMiLCJkZXNjcmlwdGlvbiI6IlJlYWwtdGltZSBmbGlnaHQgdHJhY2tpbmcgZm9yIENvY2hpbiBJbnRlcm5hdGlvbmFsIEFpcnBvcnQiLCJzdGFydF91cmwiOiIvIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJ0aGVtZV9jb2xvciI6IiMxYTFhMWEiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiI2ZmZmZmZiIsIm9yaWVudGF0aW9uIjoicG9ydHJhaXQtcHJpbWFyeSIsImljb25zIjpbeyJzcmMiOiJkYXRhOmltYWdlL3BuZztiYXNlNjQsaVZCT1J3MEtHZ29BQUFBTlNVaEVVZ0FBQU1BQUFBREFDQVlBQUFDdU9sQ3ZBQUFBQkdkQlRVRUFBTEc6PC94cDoiLCJzaXplcyI6IjE5MngxOTIiLCJ0eXBlIjoiaW1hZ2UvcG5nIn1dLCJjYXRlZ29yaWVzIjpbInRyYXZlbCIsInV0aWxpdGllcyJdLCJsYW5nIjoiZW4iLCJkaXIiOiJsdHIifQ==">
+    
+    <style>
+        /* CSS Variables for theming */
+        :root {
+            --primary-bg: #ffffff;
+            --secondary-bg: #f8f9fa;
+            --header-bg: #1a1a1a;
+            --text-color: #333333;
+            --border-color: #dee2e6;
+            --control-bg: #ffffff;
+            --control-text: #333333;
+            --accent-color: #007bff;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] {
+            --primary-bg: #1a1a1a;
+            --secondary-bg: #2d2d2d;
+            --header-bg: #000000;
+            --text-color: #ffffff;
+            --border-color: #404040;
+            --control-bg: #2d2d2d;
+            --control-text: #ffffff;
+            --shadow: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--text-color);
+            line-height: 1.6;
+            transition: all 0.3s ease;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+
+        /* Header Styles */
+        header {
+            background: var(--header-bg);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px var(--shadow);
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .theme-toggle, .refresh-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover, .refresh-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        /* Controls Section */
+        .controls-section {
+            background: var(--secondary-bg);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px var(--shadow);
+        }
+
+        /* Search Container */
+        .search-container {
+            margin-bottom: 20px;
+        }
+
+        .search-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        #flightSearch {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--control-bg);
+            color: var(--control-text);
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        #flightSearch:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+        }
+
+        #searchButton {
+            padding: 12px 20px;
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            min-width: 60px;
+        }
+
+        #searchButton:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        #searchButton:active {
+            transform: translateY(0);
+        }
+
+        /* Search Results */
+        .search-results {
+            max-height: 300px;
+            overflow-y: auto;
+            border-radius: 8px;
+            background: var(--control-bg);
+            border: 1px solid var(--border-color);
+            margin-top: 10px;
+        }
+
+        .search-results:empty {
+            display: none;
+        }
+
+        .search-results-header {
+            padding: 12px 16px;
+            background: var(--secondary-bg);
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .search-result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.2s ease;
+        }
+
+        .search-result-item:hover {
+            background: var(--secondary-bg);
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .flight-number {
+            font-weight: 600;
+            color: var(--accent-color);
+        }
+
+        .pin-flight {
+            padding: 6px 12px;
+            background: var(--success-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .pin-flight:hover {
+            background: #218838;
+            transform: scale(1.05);
+        }
+
+        .pin-flight:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .no-results, .loading, .error {
+            padding: 20px;
+            text-align: center;
+            color: #6c757d;
+        }
+
+        /* Filters Container */
+        .filters-container {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .filter-select {
+            padding: 10px 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--control-bg);
+            color: var(--control-text);
+            font-size: 14px;
+            min-width: 140px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        /* Mobile Toggle Buttons */
+        .mobile-toggle-buttons {
+            display: none;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .toggle-btn {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--control-bg);
+            color: var(--control-text);
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn.active {
+            background: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+
+        .toggle-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px var(--shadow);
+        }
+
+        /* Status Section */
+        .status-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background: var(--secondary-bg);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .connection-status {
+            font-weight: 600;
+        }
+
+        /* Tables Container */
+        .tables-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .table-section {
+            background: var(--control-bg);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px var(--shadow);
+            overflow: hidden;
+        }
+
+        .table-section h2 {
+            background: var(--header-bg);
+            color: white;
+            padding: 15px 20px;
+            margin: 0;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background: var(--secondary-bg);
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        tr:hover {
+            background: var(--secondary-bg);
+        }
+
+        /* Pinned Flight Styles */
+        .pinned-flight {
+            background: #fff3cd !important;
+            border-left: 4px solid var(--warning-color);
+            position: relative;
+        }
+
+        [data-theme="dark"] .pinned-flight {
+            background: #332b00 !important;
+        }
+
+        .pinned-badge {
+            font-size: 12px;
+            margin-left: 5px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .delete-pinned, .add-pinned {
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: 12px;
+            margin: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .add-pinned {
+            background: var(--success-color);
+        }
+
+        .delete-pinned:hover {
+            background: #c82333;
+            transform: scale(1.1);
+        }
+
+        .add-pinned:hover {
+            background: #218838;
+            transform: scale(1.1);
+        }
+
+        /* Status indicators */
+        .status-on-time { color: var(--success-color); font-weight: 600; }
+        .status-delayed { color: var(--danger-color); font-weight: 600; }
+        .status-cancelled { color: #6c757d; font-weight: 600; }
+        .status-completed { color: var(--success-color); font-weight: 600; }
+
+        /* Loading states */
+        .loading {
+            padding: 40px 20px;
+            text-align: center;
+            color: #6c757d;
+            background: var(--secondary-bg);
+            border-radius: 8px;
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #6c757d;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Pinned Counter */
+        .pinned-counter {
+            text-align: center;
+            padding: 15px;
+            background: var(--secondary-bg);
+            border-radius: 8px;
+            margin-top: 20px;
+            font-weight: 600;
+        }
+
+        #pinnedCount {
+            color: var(--accent-color);
+            font-size: 1.2em;
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            max-width: 350px;
+        }
+
+        .toast {
+            background: var(--header-bg);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 12px var(--shadow);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            background: var(--success-color);
+        }
+
+        .toast.error {
+            background: var(--danger-color);
+        }
+
+        .toast.warning {
+            background: var(--warning-color);
+            color: #000;
+        }
+
+        .toast.info {
+            background: var(--accent-color);
+        }
+
+        /* Offline Indicator */
+        .offline-indicator {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--warning-color);
+            color: #000;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px var(--shadow);
+            z-index: 1000;
+            display: none;
+        }
+
+        /* Swipe Gesture Indicators (Mobile) */
+        .swipe-indicator {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 24px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .swipe-indicator.left {
+            left: 10px;
+            color: var(--success-color);
+        }
+
+        .swipe-indicator.right {
+            right: 10px;
+            color: var(--danger-color);
+        }
+
+        .row-swiping .swipe-indicator {
+            opacity: 1;
+        }
+
+        /* Mobile Optimizations */
+        @media (max-width: 768px) {
+            .container {
+                padding: 5px;
+            }
+
+            header {
+                padding: 10px 15px;
+                margin-bottom: 15px;
+            }
+
+            header h1 {
+                font-size: 1.4rem;
+            }
+
+            .controls-section {
+                padding: 15px;
+                margin-bottom: 15px;
+            }
+
+            .search-input-group {
+                flex-direction: column;
+            }
+
+            #searchButton {
+                padding: 10px;
+            }
+
+            .filters-container {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+
+            .filter-select {
+                min-width: auto;
+                font-size: 16px;
+            }
+
+            .mobile-toggle-buttons {
+                display: flex;
+            }
+
+            .tables-container {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .table-section {
+                display: none;
+            }
+
+            .table-section.active {
+                display: block;
+            }
+
+            .table-wrapper {
+                max-height: 70vh;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            th, td {
+                padding: 8px 10px;
+            }
+
+            .mobile-hide {
+                display: none;
+            }
+
+            .status-section {
+                flex-direction: column;
+                gap: 5px;
+                text-align: center;
+                font-size: 12px;
+            }
+
+            .delete-pinned, .add-pinned {
+                padding: 10px 12px;
+                font-size: 14px;
+            }
+
+            .toast-container {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+                max-width: none;
+            }
+
+            .toast {
+                margin-bottom: 5px;
+                font-size: 14px;
+            }
+        }
+
+        /* Small mobile devices */
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 1.2rem;
+            }
+
+            .header-controls {
+                gap: 5px;
+            }
+
+            .theme-toggle, .refresh-button {
+                padding: 6px 10px;
+                font-size: 1rem;
+            }
+
+            .controls-section {
+                padding: 10px;
+            }
+
+            .filters-container {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 11px;
+            }
+
+            th, td {
+                padding: 6px 8px;
+            }
+
+            .pinned-counter {
+                font-size: 14px;
+                padding: 10px;
+            }
+        }
+
+        /* Landscape mobile orientation */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .table-wrapper {
+                max-height: 50vh;
+            }
+            
+            .controls-section {
+                padding: 10px;
+            }
+            
+            .search-input-group {
+                flex-direction: row;
+            }
+        }
+
+        /* Accessibility improvements */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            .header-controls, .controls-section, .mobile-toggle-buttons {
+                display: none;
+            }
+            
+            .tables-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .table-section {
+                display: block !important;
+                box-shadow: none;
+                border: 1px solid #000;
+            }
+        }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <header>
+            <h1>🛫 Cochin Airport Flight Tracker</h1>
+            <div class="header-controls">
+                <button id="themeToggle" class="theme-toggle">🌙</button>
+                <button id="refreshButton" class="refresh-button">🔄</button>
+            </div>
+        </header>
 
-  <div class="controls">
-    <div class="controls-left">
-      <button id="loadEarlierBtn">Load Earlier Flights</button>
-      <span id="loadingIndicator" style="display:none;color:var(--text-color);">Loading...</span>
+        <!-- Search and Filter Section -->
+        <div class="controls-section">
+            <div class="search-container">
+                <div class="search-input-group">
+                    <input type="text" id="flightSearch" placeholder="Search flight number (e.g., IX123)" />
+                    <button id="searchButton">🔍</button>
+                </div>
+                <div id="searchResults" class="search-results"></div>
+            </div>
+
+            <div class="filters-container">
+                <select id="dateFilter" class="filter-select">
+                    <option value="all">All Dates</option>
+                    <option value="today">Today</option>
+                    <option value="tomorrow">Tomorrow</option>
+                </select>
+                
+                <select id="airlineFilter" class="filter-select">
+                    <option value="all">All Airlines</option>
+                    <option value="IX">Air India Express</option>
+                    <option value="IXAI">IX + AI</option>
+                </select>
+                
+                <select id="sortOption" class="filter-select">
+                    <option value="eta">Sort by ETA</option>
+                    <option value="airline">Sort by Airline</option>
+                    <option value="flight">Sort by Flight Number</option>
+                </select>
+            </div>
+
+            <div class="mobile-toggle-buttons">
+                <button id="showArrivals" class="toggle-btn active">✈️ Arrivals</button>
+                <button id="showDepartures" class="toggle-btn">🛫 Departures</button>
+            </div>
+        </div>
+
+        <!-- Status Section -->
+        <div class="status-section">
+            <div id="lastUpdated" class="last-updated">Last updated: Never</div>
+            <div id="connectionStatus" class="connection-status">🔴 Offline</div>
+        </div>
+
+        <!-- Flight Tables Section -->
+        <div class="tables-container">
+            <!-- Arrivals Table -->
+            <div id="arrivalsSection" class="table-section active">
+                <h2>📥 Arrivals</h2>
+                <div class="table-wrapper">
+                    <table id="arrivals-table">
+                        <thead>
+                            <tr>
+                                <th>Flight</th>
+                                <th>Airline</th>
+                                <th class="mobile-hide">From</th>
+                                <th>ETA</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div id="arrivalsLoading" class="loading">Loading arrivals...</div>
+            </div>
+
+            <!-- Departures Table -->
+            <div id="departuresSection" class="table-section">
+                <h2>📤 Departures</h2>
+                <div class="table-wrapper">
+                    <table id="departures-table">
+                        <thead>
+                            <tr>
+                                <th>Flight</th>
+                                <th>Airline</th>
+                                <th class="mobile-hide">To</th>
+                                <th>ETD</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div id="departuresLoading" class="loading">Loading departures...</div>
+            </div>
+        </div>
+
+        <!-- Pinned Flights Counter -->
+        <div id="pinnedCounter" class="pinned-counter">
+            📌 Pinned Flights: <span id="pinnedCount">0</span>
+        </div>
     </div>
-    <div class="controls-right">
-      <button id="themeToggle">Dark Mode</button>
-      <label>
-        Airline Filter:
-        <select id="airlineFilter">
-          <option value="IX">AIX Only</option>
-          <option value="IXAI">AIX + AI</option>
-          <option value="IXOAL" selected>AIX + OAL</option>
-        </select>
-      </label>
-      <label>
-        Sort by:
-        <select id="sortOption">
-          <option value="scheduled" selected>STA / STD</option>
-          <option value="estimated">ETA / ETD</option>
-          <option value="delayed">Delayed First</option>
-        </select>
-      </label>
+
+    <!-- Mobile Toast Notifications -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Offline indicator -->
+    <div id="offlineIndicator" class="offline-indicator">
+        📶 You're offline. Data may be outdated.
     </div>
-  </div>
 
-  <div class="tabs">
-    <button class="tab-btn active" data-tab="arrdep">Arrivals / Departures</button>
-    <button class="tab-btn" data-tab="turnaround">Turnaround</button>
-  </div>
+    <script>
+        class FlightTracker {
+            constructor() {
+                this.pinnedFlights = this.loadFromCache();
+                this.currentTab = 'arrivals';
+                this.lastUpdate = null;
+                this.refreshInterval = null;
+                this.touchStartX = 0;
+                this.touchStartY = 0;
+                this.swipeThreshold = 100;
+                this.lastFlightData = null;
+                
+                this.init();
+            }
 
-  <div class="tab-content active" id="tab-arrdep">
-    <h2>Arrivals - AIX Security-COK</h2>
-    <table id="arrivals-table">
-      <thead>
-        <tr>
-          <th>Flight No</th>
-          <th>Registration</th>
-          <th>From</th>
-          <th>ETA</th>
-          <th>STA</th>
-          <th>Aircraft</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-    <h2>Departures - AIX Security-COK</h2>
-    <table id="departures-table">
-      <thead>
-        <tr>
-          <th>Flight No</th>
-          <th>Registration</th>
-          <th>To</th>
-          <th>ETD</th>
-          <th>STD</th>
-          <th>Aircraft</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
+            init() {
+                this.setupEventListeners();
+                this.setupMobileOptimizations();
+                this.setupTheme();
+                this.setupOfflineDetection();
+                this.loadFlightData();
+                this.startAutoRefresh();
+                this.renderPinnedFlights();
+                this.updatePinnedCounter();
+            }
 
-  <div class="tab-content" id="tab-turnaround">
-    <h2>Turnaround Flights</h2>
-    <table id="turnaround-table">
-      <thead>
-        <tr>
-          <th>Arrival / Departure Flight No</th>
-          <th>Registration</th>
-          <th>STA / STD</th>
-          <th>ETA / ETD</th>
-          <th>Aircraft Type</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
+            setupEventListeners() {
+                // Theme toggle
+                document.getElementById('themeToggle').addEventListener('click', () => {
+                    this.toggleTheme();
+                });
 
-  <script>
-    // Flightradar24 App/Website link handler
-    function openFR24(flightno) {
-      const fnorm = String(flightno).toLowerCase();
-      var appurl = `fr24://flight/${fnorm}`;
-      var weburl = `https://www.flightradar24.com/flight/${fnorm}`;
-      if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-        window.location = appurl;
-        setTimeout(() => window.open(weburl, "_blank"), 500);
-      } else {
-        window.open(weburl, "_blank");
-      }
-    }
+                // Refresh button
+                document.getElementById('refreshButton').addEventListener('click', () => {
+                    this.loadFlightData();
+                    this.showToast('Refreshing flight data...', 'info');
+                });
 
-    const baseUrl = "https://api.flightradar24.com/common/v1/airport.json?code=cok";
-    let historicalFlights = { arrivals: new Set(), departures: new Set() };
-    let flightsCache = { arrivals: [], departures: [] };
-    let currentTimestamp = Math.floor(Date.now() / 1000);
+                // Search functionality
+                const searchInput = document.getElementById('flightSearch');
+                const searchButton = document.getElementById('searchButton');
+                
+                searchButton.addEventListener('click', () => this.performSearch());
+                searchInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') this.performSearch();
+                });
 
-    const getEndpoint = (type, page = 1, timestamp = null) => {
-      const ts = timestamp || Math.floor(Date.now() / 1000);
-      return `${baseUrl}&plugin-setting[schedule][mode]=${type}&plugin-setting[schedule][timestamp]=${ts}&page=${page}&limit=100`;
-    };
-    const toLocalTime = ts => {
-      if (!ts) return "-";
-      return new Date(ts * 1000).toLocaleTimeString('en-IN', { timeZone:'Asia/Kolkata', hour:'2-digit', minute:'2-digit', hour12: false });
-    };
-    const classifyStatus = (estimated, scheduled) => {
-      if (!estimated || !scheduled) return "status-green";
-      const delay = estimated - scheduled;
-      if (delay <= 0) return "status-green";
-      if (delay <= 900) return "status-orange";
-      return "status-red";
-    };
-    const getLogoURL = (flightNumber) => {
-      if (flightNumber.startsWith("IX")) {
-        return "https://cdn.brandfetch.io/idM6IAvrlf/w/820/h/248/theme/dark/logo.png?c=1dxbfHSJFAPEGdCLU4o5B";
-      } else if (flightNumber.startsWith("AI")) {
-        return "https://cdn.brandfetch.io/id-PSmaCm4/w/800/h/284/theme/light/logo.png?c=1dxbfHSJFAPEGdCLU4o5B";
-      } else if (flightNumber.startsWith("UL")) {
-        return "https://cdn.brandfetch.io/idZQkqhbVi/w/800/h/578/theme/dark/symbol.png?c=1dxbfHSJFAPEGdCLU4o5B";
-      } else if (flightNumber.startsWith("AK") || flightNumber.startsWith("FD")) {
-        return "https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/AirAsia_New_Logo_%282020%29.svg/768px-AirAsia_New_Logo_%282020%29.svg.png";
-      } else if (flightNumber.startsWith("FZ")) {
-        return "https://cdn.brandfetch.io/idzRsGDSFE/w/800/h/162/theme/dark/logo.png?c=1dxbfHSJFAPEGdCLU4o5B";
-      } else if (flightNumber.startsWith("J9")) {
-        return "https://cdn.brandfetch.io/idRWbgTyu0/w/800/h/248/theme/dark/logo.png?c=1dxbfHSJFAPEGdCLU4o5B";
-      } else if (flightNumber.startsWith("SQ")) {
-        return "https://cdn.brandfetch.io/idf4k686Hz/w/800/h/1091/theme/dark/symbol.png?c=1dxbfHSJFAPEGdCLU4o5B";
-      } else if (flightNumber.startsWith("MH") || flightNumber.startsWith("FD")) {
-        return "https://cdn.brandfetch.io/idWY_rcAtG/w/800/h/602/theme/dark/symbol.png?c=1dxbfHSJFAPEGdCLU4o5B";
-      } else if (flightNumber.startsWith("EK")) {
-        return "https://cdn.brandfetch.io/idItGcrKZZ/w/800/h/656/id6DT2gfn2.png?c=1dxbfHSJFAPEGdCLU4o5B";
-      } else if (flightNumber.startsWith("SV")) {
-        return "https://cdn.brandfetch.io/id_gx1nNaB/w/400/h/400/theme/dark/icon.jpeg?c=1dxbfHSJFAPEGdCLU4o5B";
-      } else if (flightNumber.startsWith("9I")) {
-        return "https://cdn.brandfetch.io/id0b9CbCMc/w/800/h/210/theme/dark/logo.png?c=1dxbfHSJFAPEGdCLU4o5B";
-      } else if (flightNumber.startsWith("GF")) {
-        return "https://cdn.brandfetch.io/id7mVly1EH/w/800/h/287/theme/dark/logo.png?c=1dxbfHSJFAPEGdCLU4o5B";
-      }
-      return "";
-    };
+                // Clear search when input is empty
+                searchInput.addEventListener('input', (e) => {
+                    if (e.target.value.trim() === '') {
+                        document.getElementById('searchResults').innerHTML = '';
+                    }
+                });
 
-    // MAIN FLIGHT VISIBLE LOGIC: Show until 20 min after ACTUAL arrival/departure (or as on-air)
-    function filterAndSortFlights(flights, type, isHistorical = false) {
-      const filterValue = document.getElementById("airlineFilter").value;
-      const sortOption = document.getElementById("sortOption").value;
-      const now = Math.floor(Date.now() / 1000);
-      const twentyMin = 20 * 60;
-      return flights.filter(f => {
-        const fn = f.flight?.identification?.number?.default || "";
-        const airlineCode = fn.substring(0, 2);
-        const reg = f.flight?.aircraft?.registration || "";
-        const est = type === "departures" ? f.flight.time.estimated?.departure : f.flight.time.estimated?.arrival;
-        const sch = type === "departures" ? f.flight.time.scheduled?.departure : f.flight.time.scheduled?.arrival;
-        const act = type === "departures" ? f.flight.time.actual?.departure : f.flight.time.actual?.arrival;
-        // Airline set filter
-        let airlineMatch = false;
-        if (filterValue === "IX") {
-          airlineMatch = fn.startsWith("IX");
-        } else if (filterValue === "IXAI") {
-          airlineMatch = fn.startsWith("IX") || fn.startsWith("AI") || fn.startsWith("EK") || fn.startsWith("SQ") ||
-            fn.startsWith("MH") || fn.startsWith("GF") || fn.startsWith("SV") || fn.startsWith("9I");
-        } else {
-          airlineMatch = fn.startsWith("IX") || ["AK", "FD", "UL", "FZ", "J9"].includes(airlineCode);
+                // Filter changes
+                document.getElementById('dateFilter').addEventListener('change', () => {
+                    this.applyFilters();
+                });
+                
+                document.getElementById('airlineFilter').addEventListener('change', () => {
+                    this.applyFilters();
+                });
+                
+                document.getElementById('sortOption').addEventListener('change', () => {
+                    this.applyFilters();
+                });
+
+                // Mobile toggle buttons
+                document.getElementById('showArrivals').addEventListener('click', () => {
+                    this.switchTab('arrivals');
+                });
+                
+                document.getElementById('showDepartures').addEventListener('click', () => {
+                    this.switchTab('departures');
+                });
+
+                // Pinned flight management
+                document.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('delete-pinned')) {
+                        const flightNumber = e.target.dataset.flight;
+                        this.removePinnedFlight(flightNumber);
+                    } else if (e.target.classList.contains('add-pinned')) {
+                        const flightNumber = e.target.dataset.flight;
+                        const type = e.target.dataset.type;
+                        this.addPinnedFlightByNumber(flightNumber, type);
+                    }
+                });
+
+                // Touch events for swipe gestures
+                document.addEventListener('touchstart', (e) => this.handleTouchStart(e), { passive: true });
+                document.addEventListener('touchmove', (e) => this.handleTouchMove(e), { passive: true });
+                document.addEventListener('touchend', (e) => this.handleTouchEnd(e), { passive: true });
+            }
+
+            setupMobileOptimizations() {
+                // Detect mobile device
+                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                
+                if (isMobile) {
+                    document.body.classList.add('mobile-device');
+                    this.switchTab('arrivals');
+                }
+
+                // Handle orientation changes
+                window.addEventListener('orientationchange', () => {
+                    setTimeout(() => {
+                        this.adjustTableHeight();
+                    }, 100);
+                });
+
+                // Handle resize events
+                window.addEventListener('resize', () => {
+                    this.adjustTableHeight();
+                });
+
+                // Initial table height adjustment
+                setTimeout(() => this.adjustTableHeight(), 1000);
+            }
+
+            setupTheme() {
+                const savedTheme = localStorage.getItem('theme') || 'light';
+                document.documentElement.setAttribute('data-theme', savedTheme);
+                this.updateThemeToggle(savedTheme);
+            }
+
+            toggleTheme() {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                this.updateThemeToggle(newTheme);
+                
+                this.showToast(`Switched to ${newTheme} theme`, 'success');
+            }
+
+            updateThemeToggle(theme) {
+                const toggle = document.getElementById('themeToggle');
+                toggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+            }
+
+            setupOfflineDetection() {
+                const updateConnectionStatus = () => {
+                    const statusElement = document.getElementById('connectionStatus');
+                    const offlineIndicator = document.getElementById('offlineIndicator');
+                    
+                    if (navigator.onLine) {
+                        statusElement.textContent = '🟢 Online';
+                        statusElement.className = 'connection-status online';
+                        offlineIndicator.style.display = 'none';
+                    } else {
+                        statusElement.textContent = '🔴 Offline';
+                        statusElement.className = 'connection-status offline';
+                        offlineIndicator.style.display = 'block';
+                    }
+                };
+
+                window.addEventListener('online', updateConnectionStatus);
+                window.addEventListener('offline', updateConnectionStatus);
+                updateConnectionStatus();
+            }
+
+            switchTab(tab) {
+                this.currentTab = tab;
+                
+                // Update button states
+                document.querySelectorAll('.toggle-btn').forEach(btn => btn.classList.remove('active'));
+                document.getElementById(tab === 'arrivals' ? 'showArrivals' : 'showDepartures').classList.add('active');
+                
+                // Show/hide appropriate sections
+                document.querySelectorAll('.table-section').forEach(section => section.classList.remove('active'));
+                document.getElementById(tab + 'Section').classList.add('active');
+            }
+
+            adjustTableHeight() {
+                const tables = document.querySelectorAll('.table-wrapper');
+                const windowHeight = window.innerHeight;
+                const headerHeight = document.querySelector('header').offsetHeight;
+                const controlsHeight = document.querySelector('.controls-section').offsetHeight;
+                const statusHeight = document.querySelector('.status-section').offsetHeight;
+                
+                const availableHeight = windowHeight - headerHeight - controlsHeight - statusHeight - 100;
+                
+                tables.forEach(table => {
+                    table.style.maxHeight = `${Math.max(300, availableHeight)}px`;
+                });
+            }
+
+            handleTouchStart(e) {
+                if (e.touches.length !== 1) return;
+                
+                const touch = e.touches[0];
+                this.touchStartX = touch.clientX;
+                this.touchStartY = touch.clientY;
+                
+                const row = e.target.closest('tr');
+                if (row && !row.querySelector('th')) {
+                    row.classList.add('row-swiping');
+                }
+            }
+
+            handleTouchMove(e) {
+                if (e.touches.length !== 1) return;
+                
+                const touch = e.touches[0];
+                const deltaX = touch.clientX - this.touchStartX;
+                const deltaY = touch.clientY - this.touchStartY;
+                
+                if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 20) {
+                    const row = e.target.closest('tr');
+                    if (row && !row.querySelector('th')) {
+                        const indicator = deltaX > 0 ? 'left' : 'right';
+                        row.classList.add('row-swiping');
+                        this.showSwipeIndicator(row, indicator);
+                    }
+                }
+            }
+
+            handleTouchEnd(e) {
+                const deltaX = e.changedTouches[0].clientX - this.touchStartX;
+                const deltaY = e.changedTouches[0].clientY - this.touchStartY;
+                
+                document.querySelectorAll('.row-swiping').forEach(row => {
+                    row.classList.remove('row-swiping');
+                    this.hideSwipeIndicators(row);
+                });
+                
+                if (Math.abs(deltaX) > this.swipeThreshold && Math.abs(deltaX) > Math.abs(deltaY)) {
+                    const row = e.target.closest('tr');
+                    if (row && !row.querySelector('th')) {
+                        const flightNumber = row.cells[0]?.textContent?.trim()?.replace('📌', '').trim();
+                        
+                        if (deltaX > 0) {
+                            this.handleSwipePin(flightNumber, row);
+                        } else {
+                            this.handleSwipeUnpin(flightNumber);
+                        }
+                    }
+                }
+            }
+
+            showSwipeIndicator(row, direction) {
+                let indicator = row.querySelector('.swipe-indicator');
+                if (!indicator) {
+                    indicator = document.createElement('div');
+                    indicator.className = `swipe-indicator ${direction}`;
+                    row.style.position = 'relative';
+                    row.appendChild(indicator);
+                }
+                
+                indicator.textContent = direction === 'left' ? '📌' : '🗑️';
+                indicator.classList.add(direction);
+            }
+
+            hideSwipeIndicators(row) {
+                const indicators = row.querySelectorAll('.swipe-indicator');
+                indicators.forEach(indicator => indicator.remove());
+            }
+
+            handleSwipePin(flightNumber, row) {
+                if (!flightNumber) return;
+                
+                const type = row.closest('#arrivalsSection') ? 'arrivals' : 'departures';
+                this.addPinnedFlightByNumber(flightNumber, type);
+                this.showToast(`📌 Pinned ${flightNumber}`, 'success');
+            }
+
+            handleSwipeUnpin(flightNumber) {
+                if (!flightNumber) return;
+                
+                this.removePinnedFlight(flightNumber);
+                this.showToast(`🗑️ Unpinned ${flightNumber}`, 'info');
+            }
+
+            async loadFlightData() {
+                try {
+                    this.showLoading(true);
+                    const cochiApiUrl = "https://api.allorigins.win/raw?url=https://data-live.flightradar24.com/zones/fcgi/feed.js?bounds=10.5,9.5,76.5,75.5&faa=1&satellite=1&mlat=1&flarm=1&adsb=1&gnd=1&air=1&vehicles=1&estimated=1&maxage=14400&gliders=1&stats=1";
+                    
+                    const response = await fetch(cochiApiUrl);
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    
+                    const data = await response.json();
+                    this.lastFlightData = data;
+                    this.processFlightData(data);
+                    this.updateLastUpdated();
+                    
+                } catch (error) {
+                    console.error('Error fetching flight data:', error);
+                    this.showToast('Failed to load flight data. Please check your connection.', 'error');
+                } finally {
+                    this.showLoading(false);
+                }
+            }
+
+            processFlightData(data) {
+                const flights = Object.values(data.states || {}).map(flight => ({ flight }));
+                
+                const arrivals = flights.filter(f => this.isArrival(f));
+                const departures = flights.filter(f => this.isDeparture(f));
+                
+                this.renderFlights(arrivals, 'arrivals');
+                this.renderFlights(departures, 'departures');
+                this.renderPinnedFlights();
+            }
+
+            isArrival(flight) {
+                const destination = flight.flight?.airport?.destination?.code?.iata;
+                return destination === 'COK';
+            }
+
+            isDeparture(flight) {
+                const origin = flight.flight?.airport?.origin?.code?.iata;
+                return origin === 'COK';
+            }
+
+            renderFlights(flights, type) {
+                const tableBody = document.querySelector(`#${type}-table tbody`);
+                if (!tableBody) return;
+                
+                const nonPinnedRows = tableBody.querySelectorAll('tr:not(.pinned-flight)');
+                nonPinnedRows.forEach(row => row.remove());
+                
+                const filteredFlights = this.filterAndSortFlights(flights, type);
+                
+                filteredFlights.forEach(flight => {
+                    const row = this.createFlightRow(flight, type, false);
+                    tableBody.appendChild(row);
+                });
+
+                // Show message if no flights
+                if (filteredFlights.length === 0) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `<td colspan="6" style="text-align: center; padding: 20px; color: #666;">No flights found</td>`;
+                    tableBody.appendChild(row);
+                }
+            }
+
+            filterAndSortFlights(flights, type) {
+                const dateFilter = document.getElementById('dateFilter').value;
+                const airlineFilter = document.getElementById('airlineFilter').value;
+                const sortOption = document.getElementById('sortOption').value;
+                
+                const now = new Date();
+                const todayStart = new Date(now);
+                todayStart.setHours(0, 0, 0, 0);
+                const todayEnd = new Date(now);
+                todayEnd.setHours(23, 59, 59, 999);
+                const tomorrowStart = new Date(todayEnd.getTime() + 1);
+                const tomorrowEnd = new Date(tomorrowStart);
+                tomorrowEnd.setHours(23, 59, 59, 999);
+
+                return flights.filter(flight => {
+                    const flightNumber = flight.flight?.identification?.number?.default || "";
+                    const airlineCode = flightNumber.substring(0, 2);
+                    
+                    // Date filtering
+                    const flightTime = this.getFlightTime(flight, type);
+                    const flightDate = new Date(flightTime * 1000);
+                    
+                    if (dateFilter === 'today') {
+                        if (flightDate < todayStart || flightDate > todayEnd) return false;
+                    } else if (dateFilter === 'tomorrow') {
+                        if (flightDate < tomorrowStart || flightDate > tomorrowEnd) return false;
+                    }
+                    
+                    // Airline filtering
+                    if (airlineFilter === 'IX') {
+                        return airlineCode === 'IX' || flightNumber.startsWith('IX');
+                    } else if (airlineFilter === 'IXAI') {
+                        return ['IX', 'AI'].includes(airlineCode) || flightNumber.startsWith('IX') || flightNumber.startsWith('AI');
+                    }
+                    
+                    return true;
+                }).sort((a, b) => {
+                    const aTime = this.getFlightTime(a, type);
+                    const bTime = this.getFlightTime(b, type);
+                    
+                    if (sortOption === 'eta') {
+                        return aTime - bTime;
+                    } else if (sortOption === 'airline') {
+                        const aAirline = a.flight?.airline?.name || '';
+                        const bAirline = b.flight?.airline?.name || '';
+                        return aAirline.localeCompare(bAirline);
+                    } else if (sortOption === 'flight') {
+                        const aFlight = a.flight?.identification?.number?.default || '';
+                        const bFlight = b.flight?.identification?.number?.default || '';
+                        return aFlight.localeCompare(bFlight);
+                    }
+                    
+                    return 0;
+                });
+            }
+
+            getFlightTime(flight, type) {
+                if (type === 'departures') {
+                    return flight.flight?.time?.estimated?.departure || 
+                           flight.flight?.time?.scheduled?.departure || 
+                           flight.flight?.time?.actual?.departure || 0;
+                } else {
+                    return flight.flight?.time?.estimated?.arrival || 
+                           flight.flight?.time?.scheduled?.arrival || 
+                           flight.flight?.time?.actual?.arrival || 0;
+                }
+            }
+
+            createFlightRow(flight, type, isPinned = false) {
+                const row = document.createElement('tr');
+                row.className = isPinned ? 'pinned-flight' : '';
+                
+                const flightNumber = flight.flight?.identification?.number?.default || 'N/A';
+                const airline = flight.flight?.airline?.name || 'Unknown';
+                const location = type === 'arrivals' ? 
+                    (flight.flight?.airport?.origin?.name || 'Unknown') : 
+                    (flight.flight?.airport?.destination?.name || 'Unknown');
+                
+                const flightTime = this.getFlightTime(flight, type);
+                const timeFormatted = flightTime ? new Date(flightTime * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'N/A';
+                
+                const status = this.getFlightStatus(flight, type);
+                const statusClass = this.getStatusClass(status);
+                
+                row.innerHTML = `
+                    <td>
+                        ${flightNumber}
+                        ${isPinned ? '<span class="pinned-badge">📌</span>' : ''}
+                    </td>
+                    <td>${airline}</td>
+                    <td class="mobile-hide">${location}</td>
+                    <td>${timeFormatted}</td>
+                    <td class="${statusClass}">${status}</td>
+                    <td>
+                        ${isPinned ? 
+                            `<button class="delete-pinned" data-flight="${flightNumber}">🗑️</button>` :
+                            `<button class="add-pinned" data-flight="${flightNumber}" data-type="${type}">📌</button>`
+                        }
+                    </td>
+                `;
+                
+                return row;
+            }
+
+            getFlightStatus(flight, type) {
+                const estimated = type === 'departures' ? 
+                    flight.flight?.time?.estimated?.departure : 
+                    flight.flight?.time?.estimated?.arrival;
+                const scheduled = type === 'departures' ? 
+                    flight.flight?.time?.scheduled?.departure : 
+                    flight.flight?.time?.scheduled?.arrival;
+                const actual = type === 'departures' ? 
+                    flight.flight?.time?.actual?.departure : 
+                    flight.flight?.time?.actual?.arrival;
+                
+                if (actual) return 'Completed';
+                if (estimated && scheduled) {
+                    const delay = (estimated - scheduled) / 60;
+                    if (delay > 15) return `Delayed ${Math.round(delay)}m`;
+                    if (delay < -15) return 'Early';
+                }
+                
+                return 'On Time';
+            }
+
+            getStatusClass(status) {
+                if (status.includes('Delayed')) return 'status-delayed';
+                if (status === 'Completed') return 'status-completed';
+                if (status === 'Cancelled') return 'status-cancelled';
+                return 'status-on-time';
+            }
+
+            async performSearch() {
+                const query = document.getElementById('flightSearch').value.trim().toUpperCase();
+                const resultsContainer = document.getElementById('searchResults');
+                
+                if (!query) {
+                    resultsContainer.innerHTML = '';
+                    return;
+                }
+                
+                resultsContainer.innerHTML = '<div class="loading">Searching...</div>';
+                
+                try {
+                    const results = await this.searchFlights(query);
+                    this.displaySearchResults(results, query);
+                } catch (error) {
+                    resultsContainer.innerHTML = '<div class="error">Search failed</div>';
+                    console.error('Search error:', error);
+                }
+            }
+
+            async searchFlights(query) {
+                const results = [];
+                
+                const tables = ['arrivals-table', 'departures-table'];
+                
+                tables.forEach(tableId => {
+                    const rows = document.querySelectorAll(`#${tableId} tbody tr`);
+                    rows.forEach(row => {
+                        const flightCell = row.cells[0];
+                        if (flightCell) {
+                            const flightNumber = flightCell.textContent.replace('📌', '').trim();
+                            if (flightNumber.includes(query)) {
+                                const type = tableId.includes('arrivals') ? 'arrivals' : 'departures';
+                                results.push({
+                                    flightNumber,
+                                    type,
+                                    airline: row.cells[1]?.textContent || 'Unknown',
+                                    location: row.cells[2]?.textContent || 'Unknown',
+                                    time: row.cells[3]?.textContent || 'Unknown',
+                                    source: 'current'
+                                });
+                            }
+                        }
+                    });
+                });
+                
+                return results;
+            }
+
+            displaySearchResults(results, query) {
+                const resultsContainer = document.getElementById('searchResults');
+                
+                if (results.length === 0) {
+                    resultsContainer.innerHTML = `<div class="no-results">No flights found for "${query}"</div>`;
+                    return;
+                }
+                
+                let html = `<div class="search-results-header">Found ${results.length} flight(s):</div>`;
+                
+                results.forEach(result => {
+                    const isPinned = this.pinnedFlights.some(pf => pf.flightNumber === result.flightNumber);
+                    html += `
+                        <div class="search-result-item">
+                            <div>
+                                <span class="flight-number">${result.flightNumber}</span>
+                                <div style="font-size: 12px; color: #666;">
+                                    ${result.airline} • ${result.location} • ${result.time}
+                                </div>
+                            </div>
+                            <button class="pin-flight" data-flight="${result.flightNumber}" data-type="${result.type}" ${isPinned ? 'disabled' : ''}>
+                                ${isPinned ? '📌 Pinned' : '➕ Pin'}
+                            </button>
+                        </div>
+                    `;
+                });
+                
+                resultsContainer.innerHTML = html;
+                
+                resultsContainer.querySelectorAll('.pin-flight').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const flightNumber = e.target.dataset.flight;
+                        const type = e.target.dataset.type;
+                        this.addPinnedFlightByNumber(flightNumber, type);
+                        e.target.disabled = true;
+                        e.target.textContent = '📌 Pinned';
+                        this.showToast(`Pinned ${flightNumber}`, 'success');
+                    });
+                });
+            }
+
+            addPinnedFlightByNumber(flightNumber, type) {
+                const tableBody = document.querySelector(`#${type}-table tbody`);
+                const rows = tableBody.querySelectorAll('tr:not(.pinned-flight)');
+                
+                for (let row of rows) {
+                    const rowFlightNumber = row.cells[0]?.textContent?.replace('📌', '').trim();
+                    if (rowFlightNumber === flightNumber) {
+                        const pinnedFlight = {
+                            flightNumber,
+                            type,
+                            airline: row.cells[1]?.textContent || 'Unknown',
+                            location: row.cells[2]?.textContent || 'Unknown',
+                            time: row.cells[3]?.textContent || 'Unknown',
+                            status: row.cells[4]?.textContent || 'Unknown',
+                            pinnedAt: Date.now()
+                        };
+                        
+                        this.pinnedFlights.push(pinnedFlight);
+                        this.saveToCache();
+                        this.renderPinnedFlights();
+                        this.updatePinnedCounter();
+                        break;
+                    }
+                }
+            }
+
+            removePinnedFlight(flightNumber) {
+                this.pinnedFlights = this.pinnedFlights.filter(pf => pf.flightNumber !== flightNumber);
+                this.saveToCache();
+                this.renderPinnedFlights();
+                this.updatePinnedCounter();
+                this.showToast(`Removed ${flightNumber} from pinned flights`, 'info');
+            }
+
+            renderPinnedFlights() {
+                document.querySelectorAll('.pinned-flight').forEach(row => row.remove());
+                
+                const pinnedByType = {
+                    arrivals: this.pinnedFlights.filter(pf => pf.type === 'arrivals'),
+                    departures: this.pinnedFlights.filter(pf => pf.type === 'departures')
+                };
+                
+                Object.keys(pinnedByType).forEach(type => {
+                    const tableBody = document.querySelector(`#${type}-table tbody`);
+                    if (!tableBody) return;
+                    
+                    pinnedByType[type].forEach(pinnedFlight => {
+                        const row = this.createPinnedFlightRow(pinnedFlight);
+                        tableBody.insertBefore(row, tableBody.firstChild);
+                    });
+                });
+            }
+
+            createPinnedFlightRow(pinnedFlight) {
+                const row = document.createElement('tr');
+                row.className = 'pinned-flight';
+                
+                row.innerHTML = `
+                    <td>
+                        ${pinnedFlight.flightNumber}
+                        <span class="pinned-badge">📌</span>
+                    </td>
+                    <td>${pinnedFlight.airline}</td>
+                    <td class="mobile-hide">${pinnedFlight.location}</td>
+                    <td>${pinnedFlight.time}</td>
+                    <td class="${this.getStatusClass(pinnedFlight.status)}">${pinnedFlight.status}</td>
+                    <td>
+                        <button class="delete-pinned" data-flight="${pinnedFlight.flightNumber}">🗑️</button>
+                    </td>
+                `;
+                
+                return row;
+            }
+
+            updatePinnedCounter() {
+                const counter = document.getElementById('pinnedCount');
+                if (counter) {
+                    counter.textContent = this.pinnedFlights.length;
+                }
+            }
+
+            loadFromCache() {
+                try {
+                    const cached = localStorage.getItem('pinnedFlights');
+                    return cached ? JSON.parse(cached) : [];
+                } catch (error) {
+                    console.error('Error loading pinned flights:', error);
+                    return [];
+                }
+            }
+
+            saveToCache() {
+                try {
+                    localStorage.setItem('pinnedFlights', JSON.stringify(this.pinnedFlights));
+                } catch (error) {
+                    console.error('Error saving pinned flights:', error);
+                }
+            }
+
+            applyFilters() {
+                if (this.lastFlightData) {
+                    this.processFlightData(this.lastFlightData);
+                }
+            }
+
+            startAutoRefresh() {
+                this.refreshInterval = setInterval(() => {
+                    if (navigator.onLine) {
+                        this.loadFlightData();
+                    }
+                }, 5 * 60 * 1000);
+            }
+
+            showLoading(show) {
+                const loadingElements = document.querySelectorAll('.loading');
+                loadingElements.forEach(el => {
+                    el.style.display = show ? 'block' : 'none';
+                });
+            }
+
+            updateLastUpdated() {
+                this.lastUpdate = new Date();
+                const element = document.getElementById('lastUpdated');
+                if (element) {
+                    element.textContent = `Last updated: ${this.lastUpdate.toLocaleTimeString()}`;
+                }
+            }
+
+            showToast(message, type = 'info', duration = 3000) {
+                const container = document.getElementById('toastContainer');
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.textContent = message;
+                
+                container.appendChild(toast);
+                
+                setTimeout(() => toast.classList.add('show'), 100);
+                
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => {
+                        if (container.contains(toast)) {
+                            container.removeChild(toast);
+                        }
+                    }, 300);
+                }, duration);
+            }
         }
-        if (!airlineMatch) return false;
 
-        // --- MAIN: ARRIVAL (to COK): show if not yet landed, or landed ≤ 20 min ago
-        // --- Or DEPARTURE (from COK): show if not yet departed, or departed ≤ 20 min ago
-        if (type === "arrivals") {
-          const destCode = f.flight?.airport?.destination?.code?.iata || "";
-          if (destCode !== "COK") return false;
-          if (!act) return true; // airborne or planned
-          if (act > now - twentyMin) return true; // landed ≤20m ago
-        }
-        if (type === "departures") {
-          const origCode = f.flight?.airport?.origin?.code?.iata || "";
-          if (origCode !== "COK") return false;
-          if (!act) return true; // not yet gone
-          if (act > now - twentyMin) return true; // departed ≤20m ago
-        }
-
-        return false;
-      }).sort((a,b) => {
-        const now = Math.floor(Date.now() / 1000);
-        const getTimeValues = (f) => {
-          const isDep = type === "departures";
-          const est = isDep ? f.flight.time.estimated?.departure : f.flight.time.estimated?.arrival;
-          const sch = isDep ? f.flight.time.scheduled?.departure : f.flight.time.scheduled?.arrival;
-          const act = isDep ? f.flight.time.actual?.departure : f.flight.time.actual?.arrival;
-          const isDelayed = sch && now > sch && (!act || act > now) && (!est || est > now);
-          const isComplete = act && act <= now;
-          return { est, sch, act, isDelayed, isComplete };
-        };
-        const aTime = getTimeValues(a);
-        const bTime = getTimeValues(b);
-        if (sortOption === "delayed") {
-          if (aTime.isDelayed && !bTime.isDelayed) return -1;
-          if (!aTime.isDelayed && bTime.isDelayed) return 1;
-          if (!aTime.isComplete && bTime.isComplete) return -1;
-          if (aTime.isComplete && !bTime.isComplete) return 1;
-          return (aTime.est || aTime.sch || 0) - (bTime.est || bTime.sch || 0);
-        } else if (sortOption === "estimated") {
-          return (aTime.est || aTime.sch || 0) - (bTime.est || bTime.sch || 0);
-        } else {
-          return (aTime.sch || aTime.est || 0) - (bTime.sch || bTime.est || 0);
-        }
-      });
-    }
-
-    async function loadFlights(type, page = 1, timestamp = null, append = false) {
-      try {
-        const res = await fetch(getEndpoint(type,page,timestamp));
-        const data = await res.json();
-        const flights = data.result.response.airport.pluginData.schedule[type].data;
-        if (!append) historicalFlights[type].clear();
-        if (!append) flightsCache[type] = flights; else flightsCache[type].push(...flights);
-        const tbody = document.querySelector(`#${type}-table tbody`);
-        if (!append) tbody.innerHTML = "";
-        const filteredFlights = filterAndSortFlights(flightsCache[type], type, append);
-        const now = Math.floor(Date.now() / 1000);
-        filteredFlights.forEach(f => {
-          const fl = f.flight;
-          const flightId = fl.identification?.id;
-          if (flightId && historicalFlights[type].has(flightId)) return;
-          if (flightId) historicalFlights[type].add(flightId);
-          const isDep = type === "departures";
-          const est = isDep ? fl.time.estimated?.departure : fl.time.estimated?.arrival;
-          const sch = isDep ? fl.time.scheduled?.departure : fl.time.scheduled?.arrival;
-          const act = isDep ? fl.time.actual?.departure : fl.time.actual?.arrival;
-          const fn = fl.identification.number?.default || "-";
-          const logo = getLogoURL(fn);
-          const reg = fl.aircraft?.registration || "-";
-          const airportCode = isDep ? fl.airport.destination?.code?.iata : fl.airport.origin?.code?.iata || "-";
-          const model = fl.aircraft?.model?.text || "-";
-          const status = fl.status?.text || "-";
-          const isDelayed = sch && now > sch && (!act || act > now) && (!est || est > now);
-          const isCompleted = act && act <= now;
-          const row = document.createElement("tr");
-          if (isDelayed) row.classList.add("delayed-row");
-          else if (isCompleted) row.classList.add("completed-row");
-          row.innerHTML = `
-            <td>
-              <a href="javascript:void(0);" onclick="openFR24('${fn}')" class="fr24link">
-                <img class="flight-logo" src="${logo}" alt="logo"> ${fn}
-              </a>
-            </td>
-            <td>${reg}</td>
-            <td>${airportCode}</td>
-            <td>${toLocalTime(est)}</td>
-            <td>${toLocalTime(sch)}</td>
-            <td>${model}</td>
-            <td class="${classifyStatus(est, sch)}">${status}</td>
-          `;
-          tbody.appendChild(row);
+        // Initialize the application when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new FlightTracker();
         });
-      } catch (err) {
-        console.error(`Error loading ${type}:`, err);
-      }
-    }
 
-    function refreshAllFlights() {
-      if (!window.appendMode) {
-        historicalFlights.arrivals.clear();
-        historicalFlights.departures.clear();
-        flightsCache.arrivals = [];
-        flightsCache.departures = [];
-        currentTimestamp = Math.floor(Date.now() / 1000);
-      }
-      loadFlights("arrivals");
-      loadFlights("departures");
-      setTimeout(renderTurnarounds, 600);
-    }
-
-    async function loadEarlierFlights() {
-      const loadingIndicator = document.getElementById("loadingIndicator");
-      const loadEarlierBtn = document.getElementById("loadEarlierBtn");
-      window.appendMode = true;
-      try {
-        loadingIndicator.style.display = "inline";
-        loadEarlierBtn.disabled = true;
-        await Promise.all([
-          loadFlights("arrivals", -1, currentTimestamp, true),
-          loadFlights("departures", -1, currentTimestamp, true)
-        ]);
-        currentTimestamp -= (6 * 60 * 60);
-        window.appendMode = false;
-        refreshAllFlights();
-      } catch (error) {
-        console.error("Error loading earlier flights:", error);
-      } finally {
-        loadingIndicator.style.display = "none";
-        loadEarlierBtn.disabled = false;
-      }
-    }
-
-    function renderTurnarounds() {
-      // Show flights that ARR: land at COK and DEP: depart COK, dep within 2h of arr, both visible as per rules
-      const arrs = filterAndSortFlights(flightsCache.arrivals, "arrivals");
-      const deps = filterAndSortFlights(flightsCache.departures, "departures");
-      const arrMap = {};
-      arrs.forEach(f => {
-        const reg = f.flight.aircraft?.registration;
-        if (!reg) return;
-        const arrTime = f.flight.time.actual?.arrival || f.flight.time.estimated?.arrival || f.flight.time.scheduled?.arrival || 0;
-        if (!(reg in arrMap) || arrTime > arrMap[reg].arrTime) {
-          arrMap[reg] = {
-            flightNo: f.flight.identification?.number?.default || "-",
-            sta: f.flight.time.scheduled?.arrival,
-            eta: f.flight.time.estimated?.arrival,
-            aircraft: f.flight.aircraft?.model?.text || "-",
-            arrTime
-          };
+        // Register service worker for PWA functionality
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                const swCode = `
+                    const CACHE_NAME = 'flight-tracker-v1';
+                    const urlsToCache = ['/'];
+                    
+                    self.addEventListener('install', event => {
+                        event.waitUntil(
+                            caches.open(CACHE_NAME)
+                                .then(cache => cache.addAll(urlsToCache))
+                        );
+                    });
+                    
+                    self.addEventListener('fetch', event => {
+                        event.respondWith(
+                            caches.match(event.request)
+                                .then(response => {
+                                    return response || fetch(event.request);
+                                })
+                        );
+                    });
+                `;
+                
+                const blob = new Blob([swCode], { type: 'application/javascript' });
+                const swUrl = URL.createObjectURL(blob);
+                
+                navigator.serviceWorker.register(swUrl)
+                    .then(registration => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch(registrationError => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
         }
-      });
-      const now = Math.floor(Date.now() / 1000);
-      const output = [];
-      deps.forEach(f => {
-        const reg = f.flight.aircraft?.registration;
-        if (!reg) return;
-        if (!(reg in arrMap)) return;
-        const std = f.flight.time.scheduled?.departure;
-        const etd = f.flight.time.estimated?.departure;
-        const atd = f.flight.time.actual?.departure;
-        const arr = arrMap[reg];
-        if (arr.arrTime && std && std - arr.arrTime >= 0 && std - arr.arrTime <= 2 * 3600) {
-          if (atd && atd < now - 3600) return;
-          output.push({
-            arrFlightNo: arr.flightNo,
-            depFlightNo: f.flight.identification?.number?.default || "-",
-            reg,
-            staStd: `${toLocalTime(arr.sta)} / ${toLocalTime(std)}`,
-            etaEtd: `${toLocalTime(arr.eta)} / ${toLocalTime(etd)}`,
-            aircraft: arr.aircraft,
-            status: f.flight.status?.text || "-"
-          });
-        }
-      });
-
-      const tbody = document.querySelector("#turnaround-table tbody");
-      tbody.innerHTML = "";
-      output.sort((a, b) => {
-        const aTime = arrMap[a.reg]?.sta || 0;
-        const bTime = arrMap[b.reg]?.sta || 0;
-        return aTime - bTime;
-      });
-      output.forEach(row => {
-        const html = `<tr>
-          <td>
-            <a href="javascript:void(0);" onclick="openFR24('${row.arrFlightNo}')" class="fr24link">${row.arrFlightNo}</a>
-            /
-            <a href="javascript:void(0);" onclick="openFR24('${row.depFlightNo}')" class="fr24link">${row.depFlightNo}</a>
-          </td>
-          <td>${row.reg}</td>
-          <td>${row.staStd}</td>
-          <td>${row.etaEtd}</td>
-          <td>${row.aircraft}</td>
-          <td>${row.status}</td>
-        </tr>`;
-        tbody.insertAdjacentHTML('beforeend', html);
-      });
-    }
-
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
-        btn.classList.add('active');
-        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
-        if (btn.dataset.tab === "turnaround") renderTurnarounds();
-      });
-    });
-
-    const themeToggle = document.getElementById("themeToggle");
-    const setTheme = (theme) => {
-      document.documentElement.setAttribute("data-theme", theme);
-      themeToggle.textContent = theme === "dark" ? "Light Mode" : "Dark Mode";
-      if (typeof Storage !== "undefined") localStorage.setItem("theme", theme);
-    };
-    const initializeTheme = () => {
-      let savedTheme = "light";
-      if(typeof Storage !== "undefined") savedTheme = localStorage.getItem("theme") || "light";
-      setTheme(savedTheme);
-    };
-    themeToggle.addEventListener("click", () => {
-      const currentTheme = document.documentElement.getAttribute("data-theme") || "light";
-      setTheme(currentTheme === "dark" ? "light" : "dark");
-    });
-
-    document.getElementById("airlineFilter").addEventListener("change", refreshAllFlights);
-    document.getElementById("sortOption").addEventListener("change", refreshAllFlights);
-    document.getElementById("loadEarlierBtn").addEventListener("click", loadEarlierFlights);
-
-    initializeTheme();
-    refreshAllFlights();
-    setInterval(refreshAllFlights, 30000);
-  </script>
-
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./service-worker.js')
-          .then(reg => console.log("SW registered", reg))
-          .catch(err => console.error("SW registration failed:", err));
-      });
-    }
-    let deferredPrompt;
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      const installBtn = document.createElement("button");
-      installBtn.textContent = "Install App";
-      installBtn.style = "position:fixed;bottom:10px;right:10px;z-index:1000;";
-      installBtn.onclick = () => {
-        installBtn.remove();
-        deferredPrompt.prompt();
-        deferredPrompt.userChoice.then(choice => {
-          if (choice.outcome === 'accepted') {
-            console.log("App installed");
-          }
-          deferredPrompt = null;
-        });
-      };
-      document.body.appendChild(installBtn);
-    });
-  </script>
-
+    </script>
 </body>
 </html>
